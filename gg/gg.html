@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DryVision – Your Companion on Every Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+        }
+        /* Custom scrollbar for a sleek look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827; /* Dark gray */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4B5563; /* Medium gray */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6B7280; /* Light gray on hover */
+        }
+        /* Style for the sleek menu cards/buttons */
+        .sleek-card {
+            background-color: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .sleek-card:hover {
+            border-color: #4b5563;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        /* Glow effect for active menu items and CTA */
+        .glow-active {
+            box-shadow: 0 0 10px rgba(156, 163, 175, 0.3); /* Gray glow */
+            border-color: #9ca3af;
+        }
+        
+        /* CSS cho Model Cards */
+        .model-card {
+            cursor: pointer;
+            border: 2px solid #1f2937; /* Gray-800 default */
+            transition: all 0.2s ease-in-out;
+            background-color: #0d0d0d;
+        }
+        .model-card:hover {
+            border-color: #4b5563; /* Gray-600 on hover */
+            background-color: #111827; /* Darker background on hover */
+        }
+        .model-card.selected {
+            border-color: #ffffff; /* White border for selected */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Thêm CSS cho nút điều hướng (Nav bar) */
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link.active {
+            color: #ffffff;
+            background-color: #1f2937; /* Darker gray for active tab */
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 6px;
+        }
+
+        /* Ẩn/Hiện nội dung trang */
+        .page-content {
+            min-height: calc(100vh - 120px); /* Đảm bảo đủ không gian */
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* CSS cho Policy Modal */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        .modal-content-area {
+            max-height: 80vh;
+            overflow-y: auto;
+            background-color: #0d0d0d;
+            border: 1px solid #1a1a1a;
+        }
+        .modal-content-area::-webkit-scrollbar-thumb {
+            background: #6B7280;
+        }
+        
+    </style>
+</head>
+<body class="bg-black text-white">
+
+    <script>
+        // Sử dụng một đối tượng toàn cục để quản lý nội dung
+        const content = {
+            'VIE': {
+                // NAVIGATION
+                navTitle: 'DryVision',
+                page1: 'Giới thiệu',
+                page2: 'Phiên bản & Giá',
+                page3: 'Đăng ký sớm',
+                page4: 'Đặt hàng',
+
+                // PAGE 1: INTRODUCTION
+                heroTitle: 'DryVision – Người bạn đồng hành trên mọi hành trình.',
+                heroSubtitle: 'Tự tin, nhìn rõ, và tận hưởng trọn vẹn dù trời mưa.',
+                heroCta: 'Đặt hàng ngay', 
+                aboutTitle: 'Giới thiệu về DryVision',
+                aboutDescription: 'DryVision là thiết bị gạt nước thông minh dành cho người đeo kính. Với thiết kế nhỏ gọn, tinh tế và thông minh, DryVision giúp bạn giữ tầm nhìn rõ ràng ngay cả khi trời mưa hoặc sương mù. Đây không chỉ là một món gadget—mà là người bạn đồng hành bền bỉ của bạn.',
+                
+                feature1: 'Hai gạt mini: Giúp làm sạch cả hai tròng kính đồng thời.',
+                feature2: 'Sạc USB-C: Pin bền bỉ cho nhu cầu sử dụng hằng ngày.',
+                feature3: 'Chống nước: Hoạt động ổn định trong mọi điều kiện mưa.',
+                feature4: 'Vận hành êm: Không rung, không gây tiếng ồn khó chịu.',
+                
+                // PAGE 2: EDITION
+                modelsTitle: 'Chọn phiên bản DryVision của bạn',
+                priceLabel: 'Giá', 
+                materialPlastic: 'Phiên bản Nhựa',
+                materialMetal: 'Phiên bản Kim loại',
+                modelStandard: 'Standard (Cân bằng hiệu suất & kích thước)',
+                modelMax: 'Max (Gạt rộng hơn, dành cho kính lớn)',
+                addToCart: 'Thêm vào giỏ hàng',
+                taxNote: 'Thuế và phí vận chuyển được tính khi thanh toán.',
+
+                // PAGE 3: EARLY SUBSCRIPTION
+                subscribeTitle: 'Chương Trình Đăng Ký Sớm',
+                subscribeSubtitle: 'Hãy là người đầu tiên trải nghiệm! Đăng ký sớm để nhận được giảm giá đặc biệt 50% cho năm đầu tiên.',
+                formName: 'Họ tên',
+                formEmail: 'Địa chỉ Email',
+                formPhone: 'Số điện thoại (Tuỳ chọn)',
+                subscribeCta: 'Đăng Ký Ngay',
+                
+                // PAGE 4: ORDER
+                orderTitle: 'Hoàn Tất Đặt Hàng',
+                orderSubtitle: 'Vui lòng điền thông tin chi tiết dưới đây để hoàn tất đơn đặt hàng của bạn.',
+                orderInfoTitle: 'Thông tin Đơn hàng', 
+                selectedModelLabel: 'Mẫu đã chọn:', 
+                changeModelNote: 'Bạn có thể thay đổi mẫu ở trang "Phiên bản & Giá".', 
+                quantity: 'Số lượng',
+                address: 'Địa chỉ giao hàng',
+                placeOrderCta: 'Hoàn tất Đặt hàng',
+                subscribeStatusLabel: 'Đã đăng ký sớm (Giảm 25%)', // NEW: Nhãn trạng thái đăng ký
+                
+                // FOOTER & POLICIES
+                contactUs: 'Liên hệ',
+                storeSystem: 'Hệ thống Cửa hàng', 
+                storeLocation: 'UEH - ISB 279 Nguyễn Tri Phương, Phường 8, Quận 10, Thành phố Hồ Chí Minh', 
+                policyPrivacy: 'Chính sách bảo mật',
+                policyFAQ: 'Hỏi đáp (FAQ)',
+                tagline: 'DryVision không chỉ là thiết bị — mà là người bạn đồng hành của bạn trên mọi hành trình.',
+                copyright: '© 2025 DryVision. Bảo lưu mọi quyền.',
+                closeModal: 'Đóng', 
+                
+                // MOCK MESSAGES
+                selectModelPrompt: 'Vui lòng chọn một mẫu sản phẩm trước.',
+                orderSuccess: 'Đơn hàng đã được đặt! Mẫu đã chọn:',
+                subscribeSuccess: (name, email) => `Xin chúc mừng, ${name}! Bạn đã đăng ký sớm thành công với email ${email}. Ưu đãi 50% đang chờ bạn!`,
+                formError: 'Vui lòng điền đầy đủ thông tin.',
+                
+                // DETAILED POLICY CONTENT (HTML/Markdown-like)
+                policyPrivacyContent: `
+                    <p class="mb-4">DryVision cam kết bảo vệ quyền riêng tư của khách hàng. Chính sách này mô tả cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn.</p>
+                    <h3 class="text-xl font-bold mt-6 mb-3">1. Thông tin Thu thập</h3>
+                    <p class="mb-2">Chúng tôi thu thập thông tin bạn cung cấp trực tiếp (tên, email, địa chỉ) khi bạn đặt hàng hoặc đăng ký nhận tin.</p>
+                    <h3 class="text-xl font-bold mt-6 mb-3">2. Mục đích Sử dụng</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-1 text-gray-400">
+                        <li>Xử lý đơn hàng và giao sản phẩm.</li>
+                        <li>Cung cấp hỗ trợ khách hàng.</li>
+                        <li>Gửi thông tin cập nhật về sản phẩm và khuyến mãi (nếu bạn đồng ý).</li>
+                    </ul>
+                    <h3 class="text-xl font-bold mt-6 mb-3">3. Bảo mật</h3>
+                    <p>Chúng tôi sử dụng các biện pháp bảo mật tiêu chuẩn ngành để bảo vệ dữ liệu của bạn khỏi bị truy cập trái phép. Chúng tôi không bao giờ bán thông tin cá nhân của bạn.</p>
+                `,
+                policyFAQContent: `
+                    <h3 class="text-xl font-bold mt-6 mb-3">Sản phẩm hoạt động như thế nào?</h3>
+                    <p class="mb-4">DryVision sử dụng hai lưỡi gạt nước siêu nhỏ, được gắn vào gọng kính, hoạt động đồng thời bằng một motor nhỏ gọn để làm sạch bề mặt tròng kính khỏi nước mưa hoặc sương mù.</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">DryVision có tương thích với mọi loại kính không?</h3>
+                    <p class="mb-4">DryVision được thiết kế để phù hợp với hầu hết các loại gọng kính thông thường. Phiên bản Max được khuyến nghị cho các loại kính có kích thước lớn hơn hoặc tròng kính rộng.</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">Thời lượng pin là bao lâu?</h3>
+                    <p class="mb-4">Pin có thể sử dụng liên tục khoảng 8-10 giờ sau mỗi lần sạc đầy (qua cổng USB-C).</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">Chính sách bảo hành là gì?</h3>
+                    <p class="mb-4">Chúng tôi cung cấp bảo hành 12 tháng đối với các lỗi kỹ thuật từ nhà sản xuất.</p>
+                `,
+            },
+            'EN': {
+                // NAVIGATION
+                navTitle: 'DryVision',
+                page1: 'Introduction',
+                page2: 'Editions & Pricing',
+                page3: 'Early Subscription',
+                page4: 'Order Now',
+
+                // PAGE 1: INTRODUCTION
+                heroTitle: 'DryVision – Your Companion on Every Journey.',
+                heroSubtitle: 'Stay confident, see clearly, and enjoy the ride, even in the rain.',
+                heroCta: 'Order Now', 
+                aboutTitle: 'About DryVision',
+                aboutDescription: 'DryVision is an intelligent wiper device designed for glasses wearers. With a compact, refined, and smart design, DryVision helps you maintain crystal clear vision even in rain or fog. This is not just a gadget—it is your durable travel companion.',
+                
+                feature1: 'Dual mini-wipers: Cleans both lenses simultaneously.',
+                feature2: 'USB-C charging: Long-lasting battery life for daily use.',
+                feature3: 'Waterproof: Stable operation in all rainy conditions.',
+                feature4: 'Silent operation: No vibration, no annoying noise.',
+                
+                // PAGE 2: EDITION
+                modelsTitle: 'Choose your DryVision Edition',
+                priceLabel: 'Price', 
+                materialPlastic: 'Plastic Edition',
+                materialMetal: 'Metal Edition',
+                modelStandard: 'Standard (Balance performance & size)',
+                modelMax: 'Max (Wider wipe area, for larger glasses)',
+                addToCart: 'Add to Cart',
+                taxNote: 'Taxes and shipping calculated at checkout.',
+
+                // PAGE 3: EARLY SUBSCRIPTION
+                subscribeTitle: 'Early Access Subscription Program',
+                subscribeSubtitle: 'Be the first to experience it! Subscribe early to receive a special 50% discount for the first year.',
+                formName: 'Full Name',
+                formEmail: 'Email Address',
+                formPhone: 'Phone Number (Optional)',
+                subscribeCta: 'Subscribe Now',
+                
+                // PAGE 4: ORDER
+                orderTitle: 'Complete Your Order',
+                orderSubtitle: 'Please fill in the details below to finalize your purchase.',
+                orderInfoTitle: 'Order Information', 
+                selectedModelLabel: 'Selected Model:', 
+                changeModelNote: 'You can change the model on the "Editions & Pricing" page.', 
+                quantity: 'Quantity',
+                address: 'Shipping Address',
+                placeOrderCta: 'Place Order',
+                subscribeStatusLabel: 'Early Subscriber Status (25% Discount)', 
+                
+                // FOOTER & POLICIES
+                contactUs: 'Contact Us',
+                storeSystem: 'Store System', 
+                storeLocation: 'UEH - ISB 279 Nguyen Tri Phuong, Ward 8, District 10, Ho Chi Minh City', 
+                policyPrivacy: 'Privacy Policy',
+                policyFAQ: 'Frequently Asked Questions (FAQ)',
+                tagline: 'DryVision is not just a device — it is your companion on every journey.',
+                copyright: '© 2025 DryVision. All rights reserved.',
+                closeModal: 'Close', 
+                
+                // MOCK MESSAGES
+                selectModelPrompt: 'Please select a product model first.',
+                orderSuccess: 'Order successfully placed! Selected Model:',
+                subscribeSuccess: (name, email) => `Congratulations, ${name}! You have successfully pre-registered with email ${email}. Your 50% discount awaits!`,
+                formError: 'Please fill in all required fields.',
+                
+                // DETAILED POLICY CONTENT (HTML/Markdown-like)
+                policyPrivacyContent: `
+                    <p class="mb-4">DryVision is committed to protecting the privacy of its customers. This policy describes how we collect, use, and protect your personal information.</p>
+                    <h3 class="text-xl font-bold mt-6 mb-3">1. Information Collected</h3>
+                    <p class="mb-2">We collect information you provide directly (name, email, address) when you place an order or subscribe to our newsletter.</p>
+                    <h3 class="text-xl font-bold mt-6 mb-3">2. Purpose of Use</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-1 text-gray-400">
+                        <li>Processing orders and delivering products.</li>
+                        <li>Providing customer support.</li>
+                        <li>Sending product updates and promotions (if consented).</li>
+                    </ul>
+                    <h3 class="text-xl font-bold mt-6 mb-3">3. Security</h3>
+                    <p>We use industry-standard security measures to protect your data from unauthorized access. We never sell your personal information.</p>
+                `,
+                policyFAQContent: `
+                    <h3 class="text-xl font-bold mt-6 mb-3">How does the product work?</h3>
+                    <p class="mb-4">DryVision uses two tiny wiper blades, attached to the glasses frame, operating simultaneously via a compact motor to clear water or fog from the lens surface.</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">Is DryVision compatible with all types of glasses?</h3>
+                    <p class="mb-4">DryVision is designed to fit most standard glasses frames. The Max Edition is recommended for larger glasses or wider lenses.</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">What is the battery life?</h3>
+                    <p class="mb-4">The battery can be used continuously for about 8-10 hours per full charge (via USB-C port).</p>
+                    
+                    <h3 class="text-xl font-bold mt-6 mb-3">What is the warranty policy?</h3>
+                    <p class="mb-4">We offer a 12-month warranty against manufacturing defects.</p>
+                `,
+            }
+        };
+
+        let currentLang = 'VIE'; // Ngôn ngữ mặc định
+        let currentPage = 'introduction'; // Trang mặc định
+        let selectedModel = 'Plastic-Standard'; // Mẫu đang được chọn
+        let isEarlySubscriber = false; // NEW: Trạng thái đăng ký sớm
+
+        // Dữ liệu Mockup Ảnh và Giá (ĐÃ CẬP NHẬT ĐƯỜNG DẪN HÌNH ẢNH)
+        const modelData = {
+            'Plastic-Standard': {
+                price: 20,
+                image: 'nhuastandard.png', 
+                nameKey: 'materialPlastic',
+                modelKey: 'modelStandard'
+            },
+            'Plastic-Max': {
+                price: 22,
+                image: 'nhuamax.png', 
+                nameKey: 'materialPlastic',
+                modelKey: 'modelMax'
+            },
+            'Metal-Standard': {
+                price: 25,
+                image: 'kimloaistandard.png', 
+                nameKey: 'materialMetal',
+                modelKey: 'modelStandard'
+            },
+            'Metal-Max': {
+                price: 28,
+                image: 'kimloaimax.png', 
+                nameKey: 'materialMetal',
+                modelKey: 'modelMax'
+            },
+        };
+
+        /**
+         * Chức năng chuyển đổi ngôn ngữ
+         * @param {string} lang - Ngôn ngữ muốn chuyển đổi ('VIE' hoặc 'EN').
+         */
+        const setLanguage = (lang) => {
+            currentLang = lang;
+            document.documentElement.lang = lang === 'VIE' ? 'vi' : 'en'; // Cập nhật thẻ HTML lang
+            updateContent();
+            
+            // Cập nhật trạng thái active của nút ngôn ngữ
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-gray-700', 'text-white', 'font-bold');
+                btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-gray-900');
+            });
+            const activeBtn = document.getElementById(`lang-btn-${lang}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-gray-700', 'text-white', 'font-bold');
+                activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-gray-900');
+            }
+
+            // Đóng modal policy nếu đang mở
+            closePolicyModal();
+        };
+
+        /**
+         * Chức năng chuyển trang (chuyển đổi ẩn/hiện)
+         * @param {string} pageName - Tên trang cần hiển thị ('introduction', 'edition', 'early-subscription', 'order').
+         */
+        const showPage = (pageName) => {
+            currentPage = pageName;
+            
+            // Ẩn tất cả các trang
+            document.querySelectorAll('.page-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Hiển thị trang được chọn
+            const targetPage = document.getElementById(`page-${pageName}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+
+            // Cập nhật trạng thái 'active' trên thanh điều hướng
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-white', 'bg-gray-800');
+                link.classList.add('text-gray-400', 'hover:bg-gray-900');
+            });
+            const activeLink = document.getElementById(`nav-${pageName}`);
+            if (activeLink) {
+                activeLink.classList.add('active', 'text-white', 'bg-gray-800');
+                activeLink.classList.remove('text-gray-400', 'hover:bg-gray-900');
+            }
+            
+            // Cuộn lên đầu trang sau khi chuyển trang
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Đảm bảo tóm tắt đơn hàng được cập nhật
+            updateOrderSummaryDisplay();
+            
+            // Đóng modal nếu đang mở
+            closePolicyModal();
+        };
+        
+        // --- CHỨC NĂNG CẬP NHẬT GIAO DIỆN & DỮ LIỆU SẢN PHẨM ---
+        
+        const updateContent = () => {
+            const currentContent = content[currentLang];
+            
+            // 1. Cập nhật các thẻ i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const text = currentContent[key];
+                if (text) {
+                    if (el.tagName === 'INPUT' && el.type === 'submit') {
+                         el.value = text;
+                    } else if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') { // Không sửa textContent của input thường
+                        el.textContent = text;
+                    }
+                }
+            });
+            
+            // 2. Cập nhật Placeholder cho form
+            const updatePlaceholder = (id, key) => {
+                const el = document.getElementById(id);
+                if (el) el.placeholder = currentContent[key];
+            };
+            updatePlaceholder('subscribe-name', 'formName');
+            updatePlaceholder('subscribe-email', 'formEmail');
+            updatePlaceholder('subscribe-phone', 'formPhone');
+            updatePlaceholder('order-name', 'formName');
+            updatePlaceholder('order-phone', 'formPhone');
+            updatePlaceholder('address-order', 'address');
+
+
+            // 3. Cập nhật nội dung các model cards
+            updateModelCardLabels();
+            
+            // 4. Cập nhật lại giá và hình ảnh sau khi đổi ngôn ngữ 
+            updateDisplay(selectedModel);
+
+            // 5. Cập nhật tóm tắt đơn hàng
+            updateOrderSummaryDisplay();
+        };
+        
+        const updateModelCardLabels = () => {
+            document.querySelectorAll('.model-card').forEach(card => {
+                const modelValue = card.getAttribute('data-model');
+                const data = modelData[modelValue];
+                const currentContent = content[currentLang];
+
+                const materialText = currentContent[data.nameKey];
+                // Lấy phần tên mẫu từ key (vd: Standard)
+                const modelText = currentContent[data.modelKey].split('(')[0].trim(); 
+                
+                card.querySelector('.model-name').textContent = `${materialText} (${modelText})`;
+                card.querySelector('.model-price').textContent = `$${data.price.toFixed(2)}`;
+            });
+        };
+
+        const handleModelMouseOver = (modelValue) => {
+            updateDisplay(modelValue);
+        };
+        
+        const handleModelSelection = (modelValue) => {
+            selectedModel = modelValue;
+            updateDisplay(modelValue);
+
+            // Cập nhật trạng thái "selected" cho card
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.classList.remove('selected');
+                if (card.getAttribute('data-model') === modelValue) {
+                    card.classList.add('selected');
+                }
+            });
+            
+            // Cập nhật giá trị ẩn cho form đặt hàng
+            document.getElementById('model-order-hidden').value = modelValue;
+            updateOrderSummaryDisplay(); // Cập nhật tóm tắt sau khi chọn
+        };
+        
+        const updateDisplay = (model) => {
+            const priceElement = document.getElementById('model-price-display');
+            const imageElement = document.getElementById('model-image-display');
+            const introImageElement = document.getElementById('intro-image');
+            
+            let price = '0.00';
+            let imageUrl = 'productmockup.png'; // Fallback to a better default or the mockup image
+
+            if (model && modelData[model]) {
+                price = modelData[model].price.toFixed(2);
+                imageUrl = modelData[model].image;
+            }
+            
+            // Cập nhật giá và ảnh trong Section EDITION
+            if (priceElement) priceElement.textContent = `$${price}`;
+            if (imageElement) imageElement.src = imageUrl;
+
+            // Cập nhật ảnh trong Section INTRODUCTION (Sử dụng ảnh mặc định cho trang này)
+            if (introImageElement) introImageElement.src = 'productmockup.png'; 
+        };
+
+        /**
+         * Tính toán tổng tiền dựa trên mẫu, số lượng và trạng thái đăng ký sớm.
+         */
+        const calculateTotal = (model, quantity, isSubscriber) => {
+            if (!modelData[model] || quantity <= 0) {
+                return { subtotal: 0, discountAmount: 0, finalTotal: 0 };
+            }
+
+            const price = modelData[model].price;
+            const subtotal = price * quantity;
+            // Giảm giá 25% nếu là Early Subscriber
+            const discountRate = isSubscriber ? 0.25 : 0;
+            const discountAmount = subtotal * discountRate;
+            const finalTotal = subtotal - discountAmount;
+
+            return {
+                subtotal: subtotal.toFixed(2),
+                discountAmount: discountAmount.toFixed(2),
+                finalTotal: finalTotal.toFixed(2)
+            };
+        };
+
+        // Hàm cập nhật tóm tắt mẫu đã chọn và tính toán tổng tiền trong trang ORDER
+        const updateOrderSummaryDisplay = () => {
+            const summaryElement = document.getElementById('selected-model-summary');
+            // Lấy giá trị số lượng, nếu không lấy được thì mặc định là 1
+            const quantity = parseInt(document.getElementById('quantity-order')?.value || 1); 
+            // Lấy trạng thái đăng ký sớm
+            const isSubscriber = document.getElementById('subscriber-checkbox')?.checked || false;
+            
+            isEarlySubscriber = isSubscriber; // Cập nhật state toàn cục (cho order placement)
+
+            if (summaryElement && modelData[selectedModel]) {
+                const data = modelData[selectedModel];
+                const materialText = content[currentLang][data.nameKey];
+                const modelText = content[currentLang][data.modelKey].split('(')[0].trim();
+                summaryElement.textContent = `${materialText} (${modelText}) - $${data.price.toFixed(2)}`;
+                
+                // Tính toán tổng tiền
+                const totals = calculateTotal(selectedModel, quantity, isSubscriber);
+
+                // Cập nhật các trường hiển thị giá
+                document.getElementById('subtotal-display').textContent = `$${totals.subtotal}`;
+                document.getElementById('discount-display').textContent = `-$${totals.discountAmount}`;
+                document.getElementById('final-total-display').textContent = `$${totals.finalTotal}`;
+                
+                // Cập nhật lớp màu và ẩn/hiện cho Discount
+                const discountEl = document.getElementById('discount-row');
+                if (discountEl) {
+                    discountEl.classList.toggle('hidden', totals.discountAmount === '0.00');
+                }
+            }
+        }
+        
+        // --- CHỨC NĂNG XỬ LÝ FORM (MOCK) ---
+        
+        const displayMessage = (id, message, isSuccess = true) => {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.classList.remove('hidden', 'bg-yellow-100', 'bg-green-100', 'text-yellow-800', 'text-green-800');
+            if (isSuccess) {
+                el.classList.add('bg-green-800', 'text-white', 'p-3', 'rounded-lg', 'mt-4');
+            } else {
+                el.classList.add('bg-yellow-800', 'text-white', 'p-3', 'rounded-lg', 'mt-4');
+            }
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                el.classList.add('hidden');
+            }, 5000);
+        };
+
+        const handleSubscription = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('subscribe-name').value.trim();
+            const email = document.getElementById('subscribe-email').value.trim();
+            
+            if (!name || !email) {
+                displayMessage('subscription-message', content[currentLang].formError, false);
+                return;
+            }
+            
+            // Xử lý đăng ký thành công (Mock)
+            const successMsg = content[currentLang].subscribeSuccess(name, email);
+            displayMessage('subscription-message', successMsg, true);
+
+            // Reset form
+            document.getElementById('subscribe-form').reset();
+        };
+
+        const handleOrderPlacement = (e) => {
+            e.preventDefault();
+            const model = document.getElementById('model-order-hidden').value;
+            const quantity = parseInt(document.getElementById('quantity-order').value);
+            const address = document.getElementById('address-order').value.trim();
+            const name = document.getElementById('order-name').value.trim();
+            const phone = document.getElementById('order-phone').value.trim();
+            const isSubscriber = document.getElementById('subscriber-checkbox').checked; 
+            
+            if (!model || quantity <= 0 || !address || !name || !phone) {
+                displayMessage('order-message', content[currentLang].formError, false);
+                return;
+            }
+            
+            // Tính toán tổng tiền cuối cùng
+            const totals = calculateTotal(model, quantity, isSubscriber);
+
+            // Xử lý đặt hàng thành công (Mock)
+            const data = modelData[selectedModel];
+            const materialText = content[currentLang][data.nameKey];
+            const modelText = content[currentLang][data.modelKey].split('(')[0].trim();
+            
+            let successMsg = `${content[currentLang].orderSuccess} ${materialText} (${modelText}) - Số lượng: ${quantity}. Tổng tiền phải trả: $${totals.finalTotal}`;
+            
+            if (isSubscriber && parseFloat(totals.discountAmount) > 0) {
+                 successMsg += ` (Đã áp dụng giảm giá 25% Early Subscription)`;
+            }
+            
+            displayMessage('order-message', successMsg, true);
+            
+            // Reset form
+            document.getElementById('order-form').reset();
+            document.getElementById('quantity-order').value = 1;
+            document.getElementById('subscriber-checkbox').checked = false; 
+            selectedModel = 'Plastic-Standard'; // Reset selected model
+            handleModelSelection(selectedModel); // Update UI
+        };
+        
+        // --- CHỨC NĂNG HIỂN THỊ POLICY (MODAL) ---
+        
+        const openPolicyModal = (policyType) => {
+            const modal = document.getElementById('policy-modal');
+            const modalTitleEl = document.getElementById('modal-title');
+            const modalContentEl = document.getElementById('modal-content');
+            
+            let titleKey = policyType === 'privacy' ? 'policyPrivacy' : 'policyFAQ';
+            let contentKey = policyType === 'privacy' ? 'policyPrivacyContent' : 'policyFAQContent';
+            
+            modalTitleEl.textContent = content[currentLang][titleKey];
+            modalContentEl.innerHTML = content[currentLang][contentKey]; // Use innerHTML for structured content
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden'); // Disable background scrolling
+        };
+
+        const closePolicyModal = () => {
+            document.getElementById('policy-modal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+
+
+        // --- KHỞI TẠO ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Khởi tạo ngôn ngữ mặc định và cập nhật nội dung
+            setLanguage(currentLang); 
+            lucide.createIcons();
+            
+            // Thêm sự kiện cho các Model Card
+            document.querySelectorAll('.model-card').forEach(card => {
+                const modelValue = card.getAttribute('data-model');
+                card.addEventListener('mouseover', () => handleModelMouseOver(modelValue));
+                card.addEventListener('click', () => handleModelSelection(modelValue));
+            });
+            
+            // Thiết lập mẫu mặc định khi tải trang
+            handleModelSelection(selectedModel);
+            
+            // Gán sự kiện cho form
+            document.getElementById('subscribe-form').addEventListener('submit', handleSubscription);
+            document.getElementById('order-form').addEventListener('submit', handleOrderPlacement);
+
+            // Gán sự kiện cho các thay đổi trên form Order để tính toán lại tổng tiền
+            const quantityInput = document.getElementById('quantity-order');
+            if (quantityInput) {
+                quantityInput.addEventListener('input', updateOrderSummaryDisplay);
+            }
+            const subscriberCheckbox = document.getElementById('subscriber-checkbox');
+            if (subscriberCheckbox) {
+                subscriberCheckbox.addEventListener('change', updateOrderSummaryDisplay);
+            }
+
+            // Hiển thị trang mặc định
+            showPage(currentPage);
+        });
+    </script>
+
+
+    <header class="sticky top-0 left-0 w-full bg-black z-50 shadow-lg border-b border-gray-800">
+        <div class="container mx-auto px-4 sm:px-8 flex justify-between items-center h-16">
+            <img src="logo.png" alt="DryVision Logo" class="h-8 transition duration-300 transform hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/150x32/000000/FFFFFF?text=DryVision';" />
+            
+            <nav class="flex items-stretch h-full space-x-2 md:space-x-4">
+                <button id="nav-introduction" data-page="introduction" onclick="showPage('introduction')" class="nav-link text-sm font-semibold h-full px-3 text-gray-400 hover:bg-gray-900 transition duration-300">
+                    <span data-i18n="page1">Giới thiệu</span>
+                </button>
+                <button id="nav-edition" data-page="edition" onclick="showPage('edition')" class="nav-link text-sm font-semibold h-full px-3 text-gray-400 hover:bg-gray-900 transition duration-300">
+                    <span data-i18n="page2">Phiên bản & Giá</span>
+                </button>
+                <button id="nav-early-subscription" data-page="early-subscription" onclick="showPage('early-subscription')" class="nav-link text-sm font-semibold h-full px-3 text-gray-400 hover:bg-gray-900 transition duration-300">
+                    <span data-i18n="page3">Đăng ký sớm</span>
+                </button>
+                <button id="nav-order" data-page="order" onclick="showPage('order')" class="nav-link text-sm font-semibold h-full px-3 text-gray-400 hover:bg-gray-900 transition duration-300">
+                    <span data-i18n="page4">Đặt hàng</span>
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex border border-gray-700 rounded-lg overflow-hidden">
+                    <button id="lang-btn-VIE" onclick="setLanguage('VIE')" class="lang-btn text-xs px-2 py-1 text-gray-400 hover:text-white hover:bg-gray-900 transition duration-300">VIE</button>
+                    <button id="lang-btn-EN" onclick="setLanguage('EN')" class="lang-btn text-xs px-2 py-1 text-gray-400 hover:text-white hover:bg-gray-900 transition duration-300 border-l border-gray-700">EN</button>
+                </div>
+
+                <button aria-label="Cart" class="text-white hover:text-gray-400 transition duration-300 hidden sm:block">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                </button>
+                <button aria-label="User Account" class="text-white hover:text-gray-400 transition duration-300 hidden sm:block">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-8 max-w-6xl py-12">
+        
+        <section id="page-introduction" class="page-content hidden">
+            <div class="min-h-[50vh] flex items-center justify-center text-center pt-8 pb-16 bg-gray-950/50 rounded-xl mb-12 border border-gray-800">
+                <div class="px-6 py-10 max-w-4xl mx-auto">
+                    <h1 data-i18n="heroTitle" class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter leading-tight mb-4">
+                        DryVision – Người bạn đồng hành trên mọi hành trình.
+                    </h1>
+                    <p data-i18n="heroSubtitle" class="text-lg sm:text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                        Tự tin, nhìn rõ, và tận hưởng trọn vẹn dù trời mưa.
+                    </p>
+                    <button onclick="showPage('order')" class="inline-block px-10 py-4 bg-white text-black text-lg font-semibold rounded-full shadow-lg hover:bg-gray-300 transition duration-300 transform hover:scale-105 glow-active">
+                        <span data-i18n="heroCta">Đặt hàng ngay</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-900 pt-12">
+                <h2 data-i18n="aboutTitle" class="text-4xl sm:text-5xl font-bold mb-16 text-center">Giới thiệu về DryVision</h2>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="order-2 md:order-1 flex justify-center rounded-xl overflow-hidden shadow-2xl border border-gray-800 bg-gray-950 min-h-[350px] md:min-h-[450px] p-6">
+                        <img id="intro-image"
+                            src="productmockup.png" 
+                            alt="[Hình ảnh thiết bị DryVision gắn trên kính]" 
+                            class="w-full h-full object-contain transition duration-500" 
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=DryVision+Product';"
+                        >
+                    </div>
+
+                    <div class="order-1 md:order-2 space-y-8">
+                        <p data-i18n="aboutDescription" class="text-gray-300 text-lg leading-relaxed">
+                            DryVision là thiết bị gạt nước thông minh dành cho người đeo kính. Với thiết kế nhỏ gọn, tinh tế và thông minh, DryVision giúp bạn giữ tầm nhìn rõ ràng ngay cả khi trời mưa hoặc sương mù. Đây không chỉ là một món gadget—mà là người bạn đồng hành bền bỉ của bạn.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div class="flex items-start sleek-card p-4 rounded-lg">
+                                <i data-lucide="droplet" class="w-6 h-6 text-gray-400 mr-4 mt-1"></i>
+                                <span data-i18n="feature1" class="text-gray-200">Hai gạt mini: Giúp làm sạch cả hai tròng kính đồng thời.</span>
+                            </div>
+                            <div class="flex items-start sleek-card p-4 rounded-lg">
+                                <i data-lucide="battery-charging" class="w-6 h-6 text-gray-400 mr-4 mt-1"></i>
+                                <span data-i18n="feature2" class="text-gray-200">Sạc USB-C: Pin bền bỉ cho nhu cầu sử dụng hằng ngày.</span>
+                            </div>
+                            <div class="flex items-start sleek-card p-4 rounded-lg">
+                                <i data-lucide="cloud-rain" class="w-6 h-6 text-gray-400 mr-4 mt-1"></i>
+                                <span data-i18n="feature3" class="text-gray-200">Chống nước: Hoạt động ổn định trong mọi điều kiện mưa.</span>
+                            </div>
+                            <div class="flex items-start sleek-card p-4 rounded-lg">
+                                <i data-lucide="volume-x" class="w-6 h-6 text-gray-400 mr-4 mt-1"></i>
+                                <span data-i18n="feature4" class="text-gray-200">Vận hành êm: Không rung, không gây tiếng ồn khó chịu.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-edition" class="page-content hidden">
+            <h2 data-i18n="modelsTitle" class="text-4xl sm:text-5xl font-bold mb-16 text-center">Chọn phiên bản DryVision của bạn</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 sleek-card p-6 rounded-2xl flex items-center justify-center h-full min-h-[350px] overflow-hidden bg-gray-950">
+                    <img id="model-image-display" 
+                        src="nhuastandard.png" 
+                        alt="Hình ảnh DryVision được chọn" 
+                        class="w-full h-full object-contain transition-opacity duration-500 ease-in-out"
+                        onerror="this.onerror=null;this.src='https://placehold.co/600x400/0d0d0d/FFFFFF?text=DryVision';"
+                    >
+                </div>
+
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="p-6 md:p-8 rounded-2xl border border-gray-700 glow-active bg-gray-900 sticky top-20">
+                        <div class="mb-6">
+                            <span data-i18n="priceLabel" class="text-gray-400 text-lg block">Price</span>
+                            <span id="model-price-display" class="text-5xl font-extrabold text-white">$0.00</span>
+                        </div>
+                        
+                        <button onclick="showPage('order')" class="w-full py-4 bg-white text-black text-lg font-semibold rounded-xl hover:bg-gray-300 transition duration-300 transform hover:scale-[1.01]">
+                            <span data-i18n="addToCart">Thêm vào giỏ hàng</span>
+                        </button>
+                        <p data-i18n="taxNote" class="text-xs text-gray-500 text-center mt-3">Thuế và phí vận chuyển được tính khi thanh toán.</p>
+                        
+                        <input type="hidden" id="model-order-hidden" value="Plastic-Standard">
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="model-card rounded-xl p-4 flex justify-between items-center selected" data-model="Plastic-Standard">
+                            <div>
+                                <h4 class="model-name font-semibold text-white">Phiên bản Nhựa (Standard)</h4>
+                                <p data-i18n="modelStandard" class="text-xs text-gray-400">Cân bằng hiệu suất & kích thước</p>
+                            </div>
+                            <span class="model-price text-xl font-bold text-white">$20.00</span>
+                        </div>
+
+                        <div class="model-card rounded-xl p-4 flex justify-between items-center" data-model="Plastic-Max">
+                            <div>
+                                <h4 class="model-name font-semibold text-white">Phiên bản Nhựa (Max)</h4>
+                                <p data-i18n="modelMax" class="text-xs text-gray-400">Gạt rộng hơn, dành cho kính lớn</p>
+                            </div>
+                            <span class="model-price text-xl font-bold text-white">$22.00</span>
+                        </div>
+                        
+                        <div class="model-card rounded-xl p-4 flex justify-between items-center" data-model="Metal-Standard">
+                            <div>
+                                <h4 class="model-name font-semibold text-white">Phiên bản Kim loại (Standard)</h4>
+                                <p data-i18n="modelStandard" class="text-xs text-gray-400">Cân bằng hiệu suất & kích thước</p>
+                            </div>
+                            <span class="model-price text-xl font-bold text-white">$25.00</span>
+                        </div>
+
+                        <div class="model-card rounded-xl p-4 flex justify-between items-center" data-model="Metal-Max">
+                            <div>
+                                <h4 class="model-name font-semibold text-white">Phiên bản Kim loại (Max)</h4>
+                                <p data-i18n="modelMax" class="text-xs text-gray-400">Gạt rộng hơn, dành cho kính lớn</p>
+                            </div>
+                            <span class="model-price text-xl font-bold text-white">$28.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-early-subscription" class="page-content hidden">
+            <h2 data-i18n="subscribeTitle" class="text-4xl sm:text-5xl font-bold mb-6 text-center">Chương Trình Đăng Ký Sớm</h2>
+            <p data-i18n="subscribeSubtitle" class="text-lg text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+                Hãy là người đầu tiên trải nghiệm! Đăng ký sớm để nhận được giảm giá đặc biệt **50%** cho năm đầu tiên.
+            </p>
+
+            <form id="subscribe-form" class="sleek-card p-6 md:p-10 rounded-2xl border border-gray-800 max-w-3xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="subscribe-name" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="formName">Họ tên</label>
+                        <input type="text" id="subscribe-name" required class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0" placeholder="Họ tên">
+                    </div>
+                    <div>
+                        <label for="subscribe-email" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="formEmail">Địa chỉ Email</label>
+                        <input type="email" id="subscribe-email" required class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0" placeholder="Địa chỉ Email">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="subscribe-phone" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="formPhone">Số điện thoại (Tuỳ chọn)</label>
+                        <input type="tel" id="subscribe-phone" class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0" placeholder="Số điện thoại (Tuỳ chọn)">
+                    </div>
+                </div>
+                
+                <input type="submit" data-i18n="subscribeCta" class="w-full py-4 bg-white text-black text-lg font-semibold rounded-xl hover:bg-gray-300 transition duration-300 transform hover:scale-[1.01] cursor-pointer" value="Đăng Ký Ngay">
+
+                <div id="subscription-message" class="hidden text-center"></div>
+            </form>
+        </section>
+
+        <section id="page-order" class="page-content hidden">
+            <h2 data-i18n="orderTitle" class="text-4xl sm:text-5xl font-bold mb-4 text-center">Hoàn Tất Đặt Hàng</h2>
+            <p data-i18n="orderSubtitle" class="text-lg text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+                Vui lòng điền thông tin chi tiết dưới đây để hoàn tất đơn đặt hàng của bạn.
+            </p>
+            
+            <form id="order-form" class="sleek-card p-6 md:p-10 rounded-2xl border border-gray-800 max-w-3xl mx-auto">
+                <h3 data-i18n="orderInfoTitle" class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Thông tin Đơn hàng</h3>
+                
+                <div class="mb-6 bg-gray-900/70 p-4 rounded-lg border border-gray-700">
+                    <label data-i18n="selectedModelLabel" class="block text-gray-400 text-sm font-medium mb-1">Mẫu đã chọn:</label>
+                    <span class="font-bold text-lg" id="selected-model-summary"></span>
+                    <p data-i18n="changeModelNote" class="text-xs text-gray-500 mt-1">Bạn có thể thay đổi mẫu ở trang "Phiên bản & Giá".</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label for="order-name" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="formName">Họ tên</label>
+                        <input type="text" id="order-name" required class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0" placeholder="Họ tên">
+                    </div>
+                    <div>
+                        <label for="order-phone" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="formPhone">Số điện thoại</label>
+                        <input type="tel" id="order-phone" required class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0" placeholder="Số điện thoại">
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label for="quantity-order" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="quantity">Số lượng</label>
+                        <input type="number" id="quantity-order" required min="1" value="1" class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0">
+                    </div>
+                </div>
+
+                <label for="address-order" class="block text-gray-400 text-sm font-medium mb-1" data-i18n="address">Địa chỉ giao hàng</label>
+                <textarea id="address-order" rows="3" required class="w-full bg-black border border-gray-700 text-white p-3 rounded-lg focus:border-white focus:ring-0 mb-8" placeholder="Địa chỉ giao hàng"></textarea>
+
+                <input type="hidden" id="model-order-hidden" value="Plastic-Standard">
+                
+                <div class="md:col-span-2 mb-8 flex items-center">
+                    <input type="checkbox" id="subscriber-checkbox" class="h-5 w-5 rounded text-white bg-black border-gray-700 focus:ring-white/50 accent-white">
+                    <label for="subscriber-checkbox" data-i18n="subscribeStatusLabel" class="ml-3 text-white font-medium cursor-pointer">Đã đăng ký sớm (Giảm 25%)</label>
+                </div>
+
+                <div class="md:col-span-2 space-y-3 p-6 bg-gray-900 rounded-xl border border-gray-700 mb-8">
+                    <h4 class="text-xl font-bold mb-3 border-b border-gray-700 pb-2 text-white">Thanh toán</h4>
+                    
+                    <div class="flex justify-between text-gray-400">
+                        <span>Tổng tạm tính (Subtotal)</span>
+                        <span id="subtotal-display" class="font-semibold text-white">$0.00</span>
+                    </div>
+
+                    <div id="discount-row" class="flex justify-between text-green-400 font-bold hidden">
+                        <span>Giảm giá Early Sub (25%)</span>
+                        <span id="discount-display" class="font-semibold">-$0.00</span>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-3"></div>
+
+                    <div class="flex justify-between text-2xl font-extrabold text-white">
+                        <span>TỔNG CỘNG</span>
+                        <span id="final-total-display">$0.00</span>
+                    </div>
+                </div>
+                
+                <input type="submit" data-i18n="placeOrderCta" class="w-full py-5 bg-white text-black text-xl font-bold rounded-xl shadow-white/50 hover:bg-gray-300 transition duration-300 transform hover:scale-[1.02] cursor-pointer" value="Hoàn tất Đặt hàng">
+
+                <div id="order-message" class="hidden text-center"></div>
+            </form>
+        </section>
+    </main>
+
+    <footer id="footer" class="bg-black py-16 border-t border-gray-900">
+        <div class="container mx-auto px-4 sm:px-8 max-w-6xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                
+                <div class="space-y-6">
+                    <h3 data-i18n="contactUs" class="text-xl font-bold text-white">Liên hệ</h3>
+                    <p class="text-gray-400">Email: support@dryvision.com</p>
+                    
+                    <div class="flex space-x-6">
+                        <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-white transition duration-300"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+                        <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-white transition duration-300"><i data-lucide="facebook" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 data-i18n="storeSystem" class="text-xl font-bold text-white">Hệ thống Cửa hàng</h3>
+                    <p data-i18n="storeLocation" class="text-gray-400 text-sm leading-relaxed">UEH - ISB 279 Nguyễn Tri Phương, Phường 8, Quận 10, Thành phố Hồ Chí Minh</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-white">Chính sách</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><button onclick="openPolicyModal('privacy')" data-i18n="policyPrivacy" class="hover:text-white transition duration-200 text-left">Chính sách bảo mật</button></li>
+                        <li><button onclick="openPolicyModal('faq')" data-i18n="policyFAQ" class="hover:text-white transition duration-200 text-left">Hỏi đáp (FAQ)</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-16 pt-8 border-t border-gray-800 text-center">
+                <p data-i18n="copyright" class="text-sm text-gray-500">&copy; 2025 DryVision. Bảo lưu mọi quyền.</p>
+                <p data-i18n="tagline" class="text-sm font-medium text-gray-400 mt-2">DryVision không chỉ là thiết bị — mà là người bạn đồng hành của bạn trên mọi hành trình.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="policy-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay transition-opacity duration-300">
+        <div class="absolute inset-0" onclick="closePolicyModal()"></div>
+
+        <div class="modal-content-area relative w-full max-w-4xl p-6 sm:p-10 rounded-xl shadow-2xl transition-transform duration-300 transform scale-100">
+            <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition duration-300" aria-label="Close Policy">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            
+            <h2 id="modal-title" class="text-3xl font-bold mb-6 text-white border-b border-gray-700 pb-3">Chính sách</h2>
+            
+            <div id="modal-content" class="text-gray-300 leading-relaxed text-sm space-y-4">
+                </div>
+
+            <button onclick="closePolicyModal()" data-i18n="closeModal" class="mt-8 w-full py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition duration-300">Đóng</button>
+        </div>
+    </div>
+
+</body>
+</html>
